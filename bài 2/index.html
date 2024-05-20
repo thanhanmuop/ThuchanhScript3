@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máy tính</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .calculator {
+            background: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .input-field {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h2 {
+            margin-top: 30px;
+            color: #333;
+        }
+        p {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Máy tính</h1>
+        <div class="input-field">
+            <label for="a">Số thứ 1:</label>
+            <input type="number" id="a" name="a">
+        </div>
+        <div class="input-field">
+            <label for="b">Số thứ 2:</label>
+            <input type="number" id="b" name="b">
+        </div>
+        <button onclick="calculate()">Tính</button>
+
+        <h2>Kết quả:</h2>
+        <p id="add-result">Cộng: </p>
+        <p id="subtract-result">Trừ: </p>
+        <p id="multiply-result">Nhân: </p>
+        <p id="divide-result">Chia: </p>
+    </div>
+
+    <script>
+async function calculate() {
+    const a = parseFloat(document.getElementById("a").value);
+    const b = parseFloat(document.getElementById("b").value);
+
+    const endpoints = ["add", "subtract", "multiply", "divide"];
+    const results = {};
+
+    for (let endpoint of endpoints) {
+        const response = await fetch(`http://127.0.0.1:8000/${endpoint}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ a, b })
+        });
+        const data = await response.json();
+        results[endpoint] = data.result !== undefined ? data.result : data.error;
+    }
+
+    document.getElementById("add-result").innerText = `Cộng: ${results.add}`;
+    document.getElementById("subtract-result").innerText = `Trừ: ${results.subtract}`;
+    document.getElementById("multiply-result").innerText = `Nhân: ${results.multiply}`;
+    document.getElementById("divide-result").innerText = `Chia: ${results.divide}`;
+}
+    </script>
+</body>
+</html>
